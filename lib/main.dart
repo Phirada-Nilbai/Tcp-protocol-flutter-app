@@ -33,8 +33,9 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   //Instantiating the class with the Ip and the PortNumber
+  //change to server Ip and Portnumber
   TcpSocketConnection socketConnection =
-      TcpSocketConnection("localhost", 65303);
+      TcpSocketConnection("192.168.200.194", 135);
 
   String message = "";
 
@@ -79,12 +80,12 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              'You have received ' + message,
+              'You have received $message',
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: sendMessage,
-              child: Text('Send Message'),
+              child: const Text('Send Message'),
             ),
           ],
         ),
