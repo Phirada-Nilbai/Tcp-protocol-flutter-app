@@ -1,16 +1,19 @@
 import 'dart:io';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'TCP Test App',
       home: MyHomePage(),
@@ -19,7 +22,10 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _MyHomePageState createState() => _MyHomePageState();
 }
 
@@ -38,16 +44,22 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
 
+  void disConnect() async {
+    client?.close();
+  }
+
   void startServer() async {
     try {
       server = await ServerSocket.bind('localhost', 4100);
-      print('listening on ${server} and ');
+      print('Connection from'
+          ' ${server?.address}:${server?.port}');
       setState(() {
-        serverStatus = 'Server status: Running';
+        serverStatus = 'Server status: Server listening on'
+            ' ${server?.address}:${server?.port}';
       });
 
       server?.listen((Socket socket) {
-        socket.listen((List<int> data) {
+        socket.listen((Uint8List data) {
           String message = utf8.decode(data);
           print('Received message from client: $message');
           setState(() {
@@ -55,7 +67,6 @@ class _MyHomePageState extends State<MyHomePage> {
           });
 
           // Process the received message
-
           String response = 'Server response';
           socket.write(utf8.encode(response));
         });
@@ -78,8 +89,8 @@ class _MyHomePageState extends State<MyHomePage> {
       String message = messageController.text;
       client?.write(utf8.encode(message));
 
-      client?.listen((List<int> data) {
-        String response = "This is server everyone";
+      client?.listen((Uint8List data) {
+        String response = "OK from server";
         print('Received response from server: $response');
       });
     } catch (e) {
@@ -93,33 +104,33 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Flutter App TCP Protocol')),
+      appBar: AppBar(title: const Text('Flutter App TCP Protocol')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(serverStatus),
             ElevatedButton(
-              child: Text('Start Server'),
               onPressed: startServer,
+              child: const Text('Start Server'),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text(clientStatus),
             ElevatedButton(
-              child: Text('Start Client'),
               onPressed: startClient,
+              child: const Text('Start Client'),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             TextField(
               controller: messageController,
-              decoration: InputDecoration(labelText: 'Message'),
+              decoration: const InputDecoration(labelText: 'Message'),
             ),
             ElevatedButton(
-              child: Text('Send Message'),
               onPressed: startClient,
+              child: const Text('Send Message to Server'),
             ),
-            SizedBox(height: 20),
-            Text('Received Message: $receivedMessage'),
+            const SizedBox(height: 20),
+            Text('Received Message from client: $receivedMessage'),
           ],
         ),
       ),
