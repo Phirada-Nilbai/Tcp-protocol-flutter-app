@@ -1,92 +1,125 @@
+import 'dart:io';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:tcp_socket_connection/tcp_socket_connection.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo TCP protocol'),
+      title: 'TCP Test App',
+      home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
   @override
-  // ignore: library_private_types_in_public_api
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  //Instantiating the class with the Ip and the PortNumber
-  //change to server Ip and Portnumber
-  TcpSocketConnection socketConnection =
-      TcpSocketConnection("192.168.200.194", 135);
-
-  String message = "";
+  ServerSocket? server;
+  Socket? client;
+  TextEditingController messageController = TextEditingController();
+  String serverStatus = 'Server status: Not started';
+  String clientStatus = 'Client status: Not connected';
+  String receivedMessage = '';
 
   @override
-  void initState() {
-    super.initState();
-    startConnection();
+  void dispose() {
+    server?.close();
+    client?.close();
+    super.dispose();
   }
 
-  //receiving and sending back a custom message
-  void messageReceived(String msg) {
-    setState(() {
-      message = msg;
-    });
-    socketConnection.sendMessage("MessageIsReceived :D ");
-  }
+  void startServer() async {
+    try {
+      server = await ServerSocket.bind('localhost', 4100);
+      print('listening on ${server} and ');
+      setState(() {
+        serverStatus = 'Server status: Running';
+      });
 
-  //starting the connection and listening to the socket asynchronously
-  void startConnection() async {
-    socketConnection.enableConsolePrint(
-        true); //use this to see in the console what's happening
-    if (await socketConnection.canConnect(5000, attempts: 3)) {
-      await socketConnection.connect(5000, messageReceived, attempts: 3);
-    } else {
-      print("Failed to connect to server");
+      server?.listen((Socket socket) {
+        socket.listen((List<int> data) {
+          String message = utf8.decode(data);
+          print('Received message from client: $message');
+          setState(() {
+            receivedMessage = message;
+          });
+
+          // Process the received message
+
+          String response = 'Server response';
+          socket.write(utf8.encode(response));
+        });
+      });
+    } catch (e) {
+      print('Failed to start server: $e');
+      setState(() {
+        serverStatus = 'Server status: Failed';
+      });
     }
   }
 
-  // send message to server
-  void sendMessage() {
-    socketConnection.sendMessage("Hello, world!");
+  void startClient() async {
+    try {
+      client = await Socket.connect('localhost', 4100);
+      setState(() {
+        clientStatus = 'Client status: Connected Host';
+      });
+
+      String message = messageController.text;
+      client?.write(utf8.encode(message));
+
+      client?.listen((List<int> data) {
+        String response = "This is server everyone";
+        print('Received response from server: $response');
+      });
+    } catch (e) {
+      print('Failed to connect client: $e');
+      setState(() {
+        clientStatus = 'Client status: Failed';
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
+      appBar: AppBar(title: Text('Flutter App TCP Protocol')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have received $message',
-            ),
-            const SizedBox(height: 20),
+          children: [
+            Text(serverStatus),
             ElevatedButton(
-              onPressed: sendMessage,
-              child: const Text('Send Message'),
+              child: Text('Start Server'),
+              onPressed: startServer,
             ),
+            SizedBox(height: 20),
+            Text(clientStatus),
+            ElevatedButton(
+              child: Text('Start Client'),
+              onPressed: startClient,
+            ),
+            SizedBox(height: 20),
+            TextField(
+              controller: messageController,
+              decoration: InputDecoration(labelText: 'Message'),
+            ),
+            ElevatedButton(
+              child: Text('Send Message'),
+              onPressed: startClient,
+            ),
+            SizedBox(height: 20),
+            Text('Received Message: $receivedMessage'),
           ],
         ),
       ),
