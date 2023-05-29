@@ -37,7 +37,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String serverStatus = 'Server status: Not started';
   String clientStatus = 'Client status: Not connected';
   String receivedMessage = '';
-  String receivedMessageserver = '';
+  String receivedMessageServer = '';
 
   @override
   void dispose() {
@@ -60,7 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
         String response = "OK, I got it";
         print('Received response from server: $response');
         setState(() {
-          receivedMessageserver = response;
+          receivedMessageServer = response;
         });
       });
     } catch (e) {
@@ -97,7 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   Text('Send Message to Server', style: GoogleFonts.prompt()),
             ),
             const SizedBox(height: 20),
-            Text('Received Message from server: $receivedMessageserver',
+            Text('Received Message from server: $receivedMessageServer',
                 style: GoogleFonts.prompt()),
           ],
         ),
