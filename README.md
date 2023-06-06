@@ -15,5 +15,4 @@ This project is a starting point for a Flutter application and understand more a
 5. Connect your(client) device or launch an emulator.
 6. Run flutter run to launch the app.
  
-## Dependencies
-This app requires the tcp_socket_connection library to establish a TCP socket connection with the server. You can find more information about this library in the [pub.dev listing](https://pub.dev/packages/tcp_socket_connection).
+
