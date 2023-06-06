@@ -13,6 +13,6 @@ This project is a starting point for a Flutter application and understand more a
 3. Run flutter pub get to install dependencies.
 4. set the Ip address and port number for server     
 5. Connect your(client) device or launch an emulator.
-6. Run flutter run to launch the app.
+6. Run flutter run to launch the app for server device and client device.
  
 
