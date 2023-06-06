@@ -1,7 +1,6 @@
 import 'dart:io';
 
 
-
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 
@@ -54,7 +53,7 @@ class _ClientPageState extends State<ClientPage> {
 
       client?.listen((data) {
         var response = String.fromCharCodes(data);
-        print('Received response from server: $response');
+       // print('Received response from server: $response');
         setState(() {
           receivedMessage = response;
         });
@@ -77,22 +76,22 @@ class _ClientPageState extends State<ClientPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Client', style: GoogleFonts.prompt())),
+      appBar: AppBar(title: Text('Client' , style: GoogleFonts.prompt())),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const SizedBox(height: 20),
-            Text(clientStatus, style: GoogleFonts.prompt()),
+            Text(clientStatus/*, style: GoogleFonts.prompt()*/),
             ElevatedButton(
               onPressed: startClient,
               child: Text('Connect to server', style: GoogleFonts.prompt()),
             ),
             const SizedBox(height: 20),
-            ElevatedButton(
+            /*ElevatedButton(
               onPressed: disconnectClient,
               child: Text('Disconnect', style: GoogleFonts.prompt()),
-            ),
+            ), */
             const SizedBox(height: 20),
             TextField(
       
