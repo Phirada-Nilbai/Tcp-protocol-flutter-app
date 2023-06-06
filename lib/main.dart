@@ -1,43 +1,40 @@
 import 'dart:io';
-import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const ServerApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class ServerApp extends StatelessWidget {
+  const ServerApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'TCP Test App',
-      home: MyHomePage(),
+      home: ServerPage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+class ServerPage extends StatefulWidget {
+  const ServerPage({super.key});
 
   @override
   // ignore: library_private_types_in_public_api
-  _MyHomePageState createState() => _MyHomePageState();
+  _ServerPageState createState() => _ServerPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _ServerPageState extends State<ServerPage> {
   ServerSocket? server;
   Socket? client;
   TextEditingController messageController = TextEditingController();
   String serverStatus = 'Server status: Not started';
   String clientStatus = 'Client status: Not connected';
   String receivedMessage = '';
-  String receivedMessageserver = '';
 
   @override
   void dispose() {
@@ -48,29 +45,29 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void startServer() async {
     try {
-      server = await ServerSocket.bind('192.168.56.1', 4100);
-      print('Connection from'
-          ' ${server?.address}:${server?.port}');
+      server = await ServerSocket.bind('0.0.0.0', 4100);
+      /*  print('Connection from'
+          ' ${server?.address}:${server?.port}'); */
       setState(() {
         serverStatus = 'Server status: Server listening on'
             ' ${server?.address}:${server?.port}';
       });
 
       server?.listen((Socket socket) {
-        socket.listen((Uint8List data) {
-          String message = utf8.decode(data);
-          print('Received message from client: $message');
+        socket.listen((data) {
+          var message = String.fromCharCodes(data);
+          /* print('Received message from client: $message'); */
           setState(() {
             receivedMessage = message;
           });
 
           // Process the received message
           String response = 'Server response';
-          socket.write(utf8.encode(response));
+          socket.write((response));
         });
       });
     } catch (e) {
-      print('Failed to start server: $e');
+      /* print('Failed to start server: $e'); */
       setState(() {
         serverStatus = 'Server status: Failed';
       });
